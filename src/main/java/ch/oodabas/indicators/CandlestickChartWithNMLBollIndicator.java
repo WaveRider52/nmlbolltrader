@@ -1,28 +1,6 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2019 Ta4j Organization & respective
- * authors (see AUTHORS)
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-package ch.oodabas;
+package ch.oodabas.indicators;
 
+import ch.oodabas.loaders.CsvTradesLoader;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -68,18 +46,16 @@ import java.util.Date;
  * This class builds a traditional candlestick chart.
  */
 public class CandlestickChartWithNMLBollIndicator {
-    private static CombinedDomainXYPlot combinedPlot;
-    private static JFreeChart combinedChart;
     private static final DateAxis xAxis = new DateAxis("Time");
-    private static ChartPanel combinedChartPanel;
-    private static XYPlot indicatorXYPlot;
-
     private static BarSeries series;
 
     public static void main(final String[] args) {
 
-        series = readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
+        series = CsvTradesLoader.readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
 
+        //final BarSeries series = readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
+
+        assert series != null;
         final OHLCDataset ohlcDataset = createOHLCDataset(series);
 
         final TimeSeriesCollection bollDataset = createBollDataset(series);
@@ -133,8 +109,6 @@ public class CandlestickChartWithNMLBollIndicator {
                 PrecisionNum.valueOf(-1));
         final BollingerBandsLowerIndicator nmlLO = new BollingerBandsLowerIndicator(bbmSMA, standardDeviation,
                 PrecisionNum.valueOf(1));
-        //final PercentBIndicator pcb = new PercentBIndicator(closePriceIndicator, 5, 2);
-
 
         /*
          * Building chart dataset
@@ -142,20 +116,18 @@ public class CandlestickChartWithNMLBollIndicator {
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
         dataset.addSeries(buildChartBarSeries(series, bbuSMA, "High Bollinger Band"));
         dataset.addSeries(buildChartBarSeries(series, nmlUP, "NML Upper"));
-        //dataset.addSeries(buildChartBarSeries(series, bbmSMA, "Middle Bollinger Band"));
+
         dataset.addSeries(buildChartBarSeries(series, nmlLO, "NML Lower"));
         dataset.addSeries(buildChartBarSeries(series, bblSMA, "Low Bollinger Band"));
-        //dataset.addSeries(buildChartBarSeries(series, pcb, "pcb"));
 
-
-        return dataset; //buildChartBarSeries(series,bbmSMA, "middleBand");
+        return dataset;
 
     }
 
     private static TimeSeriesCollection createPCBDataset(final BarSeries series) {
 
         final ClosePriceIndicator closePriceIndicator = new ClosePriceIndicator(series);
-        final SMAIndicator sma = new SMAIndicator(closePriceIndicator, 20);
+        //final SMAIndicator sma = new SMAIndicator(closePriceIndicator, 20);
 
         final PercentBIndicator pcb = new PercentBIndicator(closePriceIndicator, 20, 1);
 
@@ -163,9 +135,9 @@ public class CandlestickChartWithNMLBollIndicator {
          * Building chart dataset
          */
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(buildChartBarSeries(series, pcb, "pcb"));
+        dataset.addSeries(buildChartBarSeries(series, pcb, "PCB"));
 
-        return dataset; //buildChartBarSeries(series,bbmSMA, "middleBand");
+        return dataset;
     }
 
     private static org.jfree.data.time.TimeSeries buildChartBarSeries(final BarSeries barSeries, final Indicator<Num> indicator,
@@ -205,17 +177,17 @@ public class CandlestickChartWithNMLBollIndicator {
 
         final XYLineAndShapeRenderer renderer3 = new XYLineAndShapeRenderer(true, false);
 
-        renderer3.setSeriesPaint(0, Color.BLUE);
-        renderer3.setSeriesPaint(1, Color.GREEN);
-        renderer3.setSeriesPaint(2, Color.BLACK);
-        renderer3.setSeriesPaint(3, Color.YELLOW);
+        renderer3.setSeriesPaint(0, Color.ORANGE);
+        renderer3.setSeriesPaint(1, Color.GRAY);
+        renderer3.setSeriesPaint(2, Color.GRAY);
+        renderer3.setSeriesPaint(3, Color.BLUE);
         renderer3.setSeriesPaint(4, Color.RED);
         pricePlot.setRenderer(1, renderer3);
         pricePlot.setDataset(1, chopSeries);
         pricePlot.mapDatasetToRangeAxis(1, 0);
 
         // secondary study plot
-        indicatorXYPlot = new XYPlot( /* null, xAxis, yAxis, renderer */);
+        final XYPlot indicatorXYPlot = new XYPlot();
         indicatorXYPlot.setDataset(pcbDataset);
         indicatorXYPlot.setRangeAxis(0, new NumberAxis(""));
         indicatorXYPlot.setRenderer(0, new XYLineAndShapeRenderer());
@@ -225,7 +197,7 @@ public class CandlestickChartWithNMLBollIndicator {
 
 
         // combinedPlot
-        combinedPlot = new CombinedDomainXYPlot(xAxis); // DateAxis
+        final CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot(xAxis); // DateAxis
         combinedPlot.setGap(10.0);
         // combinedPlot.setDomainAxis( xAxis );
         combinedPlot.setBackgroundPaint(Color.LIGHT_GRAY);
@@ -236,17 +208,17 @@ public class CandlestickChartWithNMLBollIndicator {
         combinedPlot.add(indicatorXYPlot, 30);
 
         // Now create the chart that contains the combinedPlot
-        combinedChart = new JFreeChart("BTC price with Bollinger & NML indicator", null, combinedPlot, true);
+        final JFreeChart combinedChart = new JFreeChart("BTC price with No Man's Land & Bollinger indicator", null, combinedPlot, true);
         combinedChart.setBackgroundPaint(Color.LIGHT_GRAY);
 
         // combinedChartPanel to contain combinedChart
-        combinedChartPanel = new ChartPanel(combinedChart);
+        final ChartPanel combinedChartPanel = new ChartPanel(combinedChart);
         combinedChartPanel.setLayout(new GridLayout(0, 1));
         combinedChartPanel.setBackground(Color.LIGHT_GRAY);
         combinedChartPanel.setPreferredSize(new java.awt.Dimension(740, 300));
 
         // Application frame
-        final ApplicationFrame frame = new ApplicationFrame("Ta4j example - Candlestick chart");
+        final ApplicationFrame frame = new ApplicationFrame("Candlestick chart");
         frame.setContentPane(combinedChartPanel);
         frame.pack();
         RefineryUtilities.centerFrameOnScreen(frame);
@@ -289,12 +261,7 @@ public class CandlestickChartWithNMLBollIndicator {
         if (resource == null) {
             throw new IllegalArgumentException("file not found! " + fileName);
         } else {
-
-            // failed if files have whitespaces or special characters
-            //return new File(resource.getFile());
-
             return new File(resource.toURI());
         }
-
     }
 }

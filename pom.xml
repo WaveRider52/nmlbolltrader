@@ -13,16 +13,27 @@
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
     <dependencies>
-    <dependency>
-        <groupId>org.ta4j</groupId>
-        <artifactId>ta4j-core</artifactId>
-        <version>0.13</version>
-    </dependency>
+        <dependency>
+            <groupId>org.ta4j</groupId>
+            <artifactId>ta4j-core</artifactId>
+            <version>0.13</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>3.9</version>
+        </dependency>
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.0.17</version>
         </dependency>
+        <!-- Logging facade -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
     </dependencies>
-    
+
 </project>
