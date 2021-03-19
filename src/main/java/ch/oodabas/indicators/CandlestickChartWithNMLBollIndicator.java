@@ -1,6 +1,5 @@
 package ch.oodabas.indicators;
 
-import ch.oodabas.loaders.CsvTradesLoader;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -47,11 +46,10 @@ import java.util.Date;
  */
 public class CandlestickChartWithNMLBollIndicator {
     private static final DateAxis xAxis = new DateAxis("Time");
-    private static BarSeries series;
 
     public static void main(final String[] args) {
 
-        series = CsvTradesLoader.readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
+        final BarSeries series = readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
 
         assert series != null;
         final OHLCDataset ohlcDataset = createOHLCDataset(series);
