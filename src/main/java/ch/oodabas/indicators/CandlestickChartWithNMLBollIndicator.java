@@ -27,6 +27,7 @@ import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
 import org.ta4j.core.indicators.bollinger.PercentBIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.helpers.OpenPriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 import org.ta4j.core.num.PrecisionNum;
@@ -123,15 +124,12 @@ public class CandlestickChartWithNMLBollIndicator {
     private static TimeSeriesCollection createPCBDataset(final BarSeries series) {
 
         final ClosePriceIndicator closePriceIndicator = new ClosePriceIndicator(series);
-        //final SMAIndicator sma = new SMAIndicator(closePriceIndicator, 20);
+        OpenPriceIndicator openPriceIndicator = new OpenPriceIndicator(series);
 
-        final PercentBIndicator pcb = new PercentBIndicator(closePriceIndicator, 20, 1);
-
-        /*
-         * Building chart dataset
-         */
+//        final PercentBIndicator pcb = new PercentBIndicator(closePriceIndicator, 20, -1);
+        DoublePercentBIndicator doublePercentBIndicator = new DoublePercentBIndicator(openPriceIndicator, closePriceIndicator, series);
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(buildChartBarSeries(series, pcb, "PCB"));
+        dataset.addSeries(buildChartBarSeries(series, doublePercentBIndicator, "PCB"));
 
         return dataset;
     }
@@ -148,13 +146,6 @@ public class CandlestickChartWithNMLBollIndicator {
         return chartTimeSeries;
     }
 
-    /**
-     * Displays a chart in a frame.
-     *
-     * @param ohlcDataset
-     * @param chopSeries
-     * @param pcbDataset
-     */
     private static void displayChart(final XYDataset ohlcDataset, final XYDataset chopSeries, final TimeSeriesCollection pcbDataset) {
         /*
          * Create the chart
