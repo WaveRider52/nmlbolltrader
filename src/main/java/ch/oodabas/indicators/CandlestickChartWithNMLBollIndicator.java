@@ -53,8 +53,6 @@ public class CandlestickChartWithNMLBollIndicator {
 
         series = CsvTradesLoader.readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
 
-        //final BarSeries series = readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
-
         assert series != null;
         final OHLCDataset ohlcDataset = createOHLCDataset(series);
 
