@@ -25,7 +25,6 @@ import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
-import org.ta4j.core.indicators.bollinger.PercentBIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.helpers.OpenPriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
@@ -50,7 +49,7 @@ public class CandlestickChartWithNMLBollIndicator {
 
     public static void main(final String[] args) {
 
-        final BarSeries series = readCsv("Binance.com_1m_ETHBTC_21_33_25-2-2021.csv");
+        final BarSeries series = readCsv("Binance.com_1m_ETHBTC_28-2-21_06-03-21.csv");
 
         assert series != null;
         final OHLCDataset ohlcDataset = createOHLCDataset(series);
@@ -124,10 +123,10 @@ public class CandlestickChartWithNMLBollIndicator {
     private static TimeSeriesCollection createPCBDataset(final BarSeries series) {
 
         final ClosePriceIndicator closePriceIndicator = new ClosePriceIndicator(series);
-        OpenPriceIndicator openPriceIndicator = new OpenPriceIndicator(series);
+        final OpenPriceIndicator openPriceIndicator = new OpenPriceIndicator(series);
 
 //        final PercentBIndicator pcb = new PercentBIndicator(closePriceIndicator, 20, -1);
-        DoublePercentBIndicator doublePercentBIndicator = new DoublePercentBIndicator(openPriceIndicator, closePriceIndicator, series);
+        final DoublePercentBIndicator doublePercentBIndicator = new DoublePercentBIndicator(openPriceIndicator, closePriceIndicator, series);
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
         dataset.addSeries(buildChartBarSeries(series, doublePercentBIndicator, "PCB"));
 
@@ -212,7 +211,7 @@ public class CandlestickChartWithNMLBollIndicator {
         frame.setVisible(true);
     }
 
-    private static BarSeries readCsv(final String activeFile) {
+    static BarSeries readCsv(final String activeFile) {
         final File fileFromResource;
         try {
             fileFromResource = getFileFromResource(activeFile);
