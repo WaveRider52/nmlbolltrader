@@ -22,5 +22,4 @@ public class RedCandleIndicator extends CachedIndicator<Boolean> {
         }
     }
 
-
 }

@@ -44,7 +44,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class builds a graphical chart showing the buy/sell signals of a
+ * This class builds line chart showing the buy/sell signals of a
  * strategy.
  */
 public class BuyAndSellSignalsToChart {
@@ -82,7 +82,7 @@ public class BuyAndSellSignalsToChart {
         final List<Trade> trades = seriesManager.run(strategy).getTrades();
         // Adding markers to plot
         for (final Trade trade : trades) {
-            
+
             // Buy signal
             final double buySignalBarTime = new Minute(
                     Date.from(series.getBar(trade.getEntry().getIndex()).getEndTime().toInstant()))
@@ -131,7 +131,7 @@ public class BuyAndSellSignalsToChart {
 
         //final Strategy strategy = BollingerNoMansLand75Below.get(series);
 
-        final Strategy strategy = NmlBollingerStrategy.get(series);
+        final Strategy strategy = BollingerNoMansLand75Below.get(series);
 
         /*
          * Building chart datasets
